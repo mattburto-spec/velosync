@@ -1,26 +1,216 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* VeloSync — Midnight Trail palette */
+  --color-midnight: #0C1222;
+  --color-midnight-light: #141D33;
+  --color-midnight-soft: #1B2740;
+
+  --color-copper: #C8553D;
+  --color-copper-light: #D4705C;
+  --color-copper-dark: #A84430;
+
+  --color-steel: #5B8FB9;
+  --color-steel-light: #7BA8CB;
+  --color-steel-dark: #47759A;
+
+  --color-sand: #D4A574;
+  --color-sand-light: #E0BB92;
+
+  --color-summit: #6B8F71;
+  --color-summit-light: #87A98C;
+
+  --color-slate-text: #1A1D26;
+  --color-muted: #6E7787;
+  --color-surface: #F5F3EF;
+  --color-surface-warm: #EDE9E2;
+
+  --font-display: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "DM Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* Base styles */
+body {
+  color: var(--color-slate-text);
+  background: var(--color-surface);
+  font-family: var(--font-body);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Headings default to display font */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+}
+
+/* Subtle grain texture on body */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Capacity bar animation */
+@keyframes fill-bar {
+  from { width: 0; }
+}
+
+.capacity-bar {
+  animation: fill-bar 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Drag overlay */
+.drag-overlay {
+  opacity: 0.9;
+  transform: scale(1.03) rotate(-1deg);
+  box-shadow: 0 24px 48px rgba(12, 18, 34, 0.2), 0 0 0 2px var(--color-copper);
+  cursor: grabbing;
+  border-radius: 12px;
+}
+
+/* Scrollbar styling */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(110, 119, 135, 0.25);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(110, 119, 135, 0.4);
+}
+
+/* Dark scrollbar for sidebar */
+.custom-scrollbar-dark::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar-dark::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar-dark::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.custom-scrollbar-dark::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Card hover */
+.gear-card {
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s ease;
+}
+.gear-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(12, 18, 34, 0.08), 0 2px 6px rgba(12, 18, 34, 0.04);
+}
+
+/* Drop zone highlight */
+.drop-zone-active {
+  border-color: var(--color-copper) !important;
+  background-color: rgba(200, 85, 61, 0.04) !important;
+  box-shadow: 0 0 0 3px rgba(200, 85, 61, 0.15), inset 0 0 20px rgba(200, 85, 61, 0.03);
+}
+
+/* Badge pulse for maintenance due */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(0.95); }
+}
+.maintenance-due {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* Stagger animation for lists */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Warm divider */
+.divider-warm {
+  border-color: rgba(212, 165, 116, 0.2);
+}
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-copper);
+  outline-offset: 2px;
+}
+
+/* === Loadout Screen === */
+
+/* Animations */
+@keyframes hotspot-pulse {
+  0%, 100% {
+    border-color: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 0 rgba(200, 85, 61, 0);
+  }
+  50% {
+    border-color: rgba(200, 85, 61, 0.35);
+    box-shadow: 0 0 16px 3px rgba(200, 85, 61, 0.12);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes bag-placed {
+  0% { transform: scale(0.7); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes loadout-hint-float {
+  0%, 100% { transform: translate(-50%, 0); }
+  50% { transform: translate(-50%, -4px); }
+}
+
+.loadout-hint {
+  animation: loadout-hint-float 3s ease-in-out infinite;
+}
+
+/* Subtle grid pattern for canvas */
+.loadout-grid {
+  opacity: 0.012;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── Scene backgrounds ── */
+/* Workshop: warm amber ambient, concrete feel */
+.loadout-bg-workshop {
+  background: radial-gradient(ellipse 80% 80% at 50% 100%, #1a1510 0%, #0C1222 60%);
+}
+
+/* Trail: green-tinted forest ambient */
+.loadout-bg-trail {
+  background: radial-gradient(ellipse 80% 70% at 50% 90%, #0d1a12 0%, #0C1222 50%);
+}
+
+/* Night ride: blue neon ambient */
+.loadout-bg-night {
+  background: radial-gradient(ellipse 60% 60% at 50% 80%, #0c1528 0%, #060a14 50%);
+}
+
+/* Minimal: near-black clean */
+.loadout-bg-minimal {
+  background: #0a0e18;
 }
